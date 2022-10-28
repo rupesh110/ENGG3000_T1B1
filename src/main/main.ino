@@ -5,15 +5,15 @@
   #include <avr/power.h>
 #endif
 #include <YetAnotherPcInt.h>
-#define PIN        13
-#define NUMPIXELS 16
-#define DELAYVAL 500
+#define PIN       12
+#define NUMPIXELS 59
 #include <IRremote.h>
 
 #define PCINT1_PIN 8
 #define PCINT2_PIN 9
-
+#define DELAYVAL 500
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
 int RECV_PIN_1 = 3;
 int RECV_PIN_2 = 4;
 int RECV_PIN_3 = 12;
@@ -59,6 +59,7 @@ void setup()
  // Servos
      PcInt::attachInterrupt(6, pin3Changed, "Pin 6 has changed to ", RISING);
      PcInt::attachInterrupt(7, pin4Changed, "Pin 7 has changed to ", RISING);
+
  // Leds
     pinMode(PCINT1_PIN, INPUT_PULLUP);
     pinMode(PCINT2_PIN, INPUT_PULLUP);
@@ -66,6 +67,8 @@ void setup()
     PcInt::attachInterrupt(PCINT1_PIN, pin1Changed, "Pin 8 has changed to ", RISING);
     PcInt::attachInterrupt(PCINT2_PIN, pin2Changed, "Pin 9 has changed to ", RISING);
 
+     pixels.begin();
+   
    Serial.println("Setup Complete");
 }
 
@@ -82,45 +85,17 @@ void loop() {
       servo2.write(0);
       PreviousMillis2 = 0;
   }
- }
-void DecodeIR1() {
-  Serial.println("In Decode 1");
- 
-  Serial.println(irrecv1.decode(&results1));
-  if (!irrecv1.decode(&results1)) {  
-    switch (results1.decode_type) {
-      case 0:
-      Serial.println(results1.decode_type);
-      PreviousMillis1=millis();
-        servo1.write(90);
-        Serial.println("Opening the servo1");
-     // start timer
-      // and then close
-     
-      //
-    }
-    irrecv1.resume();
-  }
-}
 
-void DecodeIR2() {
-  Serial.println("In Decode 2");
- 
-  Serial.println(irrecv2.decode(&results2));
-  if (!irrecv2.decode(&results2)) {  
-      Serial.println(results2.decode_type);
-    switch (results2.decode_type) {
-      case 0:
-      PreviousMillis2=millis();
-        servo2.write(90);
-     // start timer
-      // and then close
-     
-      //
-    }
-    irrecv2.resume();
+       pixels.clear();  
+       
+  for(int i=0; i<NUMPIXELS; i++) {
+    
+    pixels.setPixelColor(i, pixels.Color(0, 150, 0));
+    pixels.show();
+    delay(DELAYVAL);
   }
-}
+  
+ }
 
 void pin1Changed(const char* message, bool pinstate) {
   Serial.print(message);
@@ -137,8 +112,8 @@ void pin3Changed(const char* message, bool pinstate) {
         if (pinstate) {
           PreviousMillis1=millis();
           servo1.write(90);
-          Serial.println("Opening the servo1");
-        }
+          Serial.println("Opening the servo1"); 
+        } 
 }
 void pin4Changed(const char* message, bool pinstate) {
   Serial.print(message);
@@ -146,6 +121,6 @@ void pin4Changed(const char* message, bool pinstate) {
        if (pinstate) {
           PreviousMillis2=millis();
           servo2.write(90);
-          Serial.println("Opening the servo2");
-        }
+          Serial.println("Opening the servo2"); 
+        } 
 }
