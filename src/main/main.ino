@@ -11,7 +11,7 @@
 
 #define PCINT1_PIN 8
 #define PCINT2_PIN 9
-#define DELAYVAL 500
+#define DELAYVAL 200
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 int RECV_PIN_1 = 3;
@@ -89,8 +89,7 @@ void loop() {
        pixels.clear();  
        
   for(int i=0; i<NUMPIXELS; i++) {
-    
-    pixels.setPixelColor(i, pixels.Color(0, 150, 0));
+    pixels.setPixelColor(i, pixels.Color(0, ballCounter*60, 0));
     pixels.show();
     delay(DELAYVAL);
   }
@@ -100,10 +99,20 @@ void loop() {
 void pin1Changed(const char* message, bool pinstate) {
   Serial.print(message);
   Serial.println(pinstate ? "HIGH" : "LOW");
+//   Increase Ball counter here
+    if (pinstate) {
+        ballCounter++;
+        Serial.println(ballCounter);
+    }
 }
 void pin2Changed(const char* message, bool pinstate) {
   Serial.print(message);
   Serial.println(pinstate ? "HIGH" : "LOW");
+//   Decrease Ball counter here
+    if (pinstate) {
+        ballCounter--;
+        Serial.println(ballCounter);
+    }
 }
 
 void pin3Changed(const char* message, bool pinstate) {
